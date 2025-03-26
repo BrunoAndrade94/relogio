@@ -4,4 +4,5 @@ function mainDraw() {
   relogio.desenhar();
 
   botaoFormatarHora.desenhar();
+  botaoFormatarMarcadores.desenhar();
 }

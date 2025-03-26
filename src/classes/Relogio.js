@@ -3,10 +3,15 @@ class Relogio {
     this.posicao = createVector(posicaoX, posicaoY);
     this.raio = raio;
     this.formato24 = false;
+    this.marcador = false;
   }
 
   mudarFormato24() {
     this.formato24 = !this.formato24;
+  }
+
+  mudarMarcadores() {
+    this.marcador = !this.marcador;
   }
 
   desenhar() {
@@ -20,6 +25,7 @@ class Relogio {
     push();
     translate(this.posicao.x, this.posicao.y);
 
+    // DESENHA A COR DO RELÓGIO COM BASE NO HORÁRIO ATUAL
     const horaAtual = new Date().getHours();
     if (horaAtual >= 18 || horaAtual < 6) fill(20, 20, 50);
     else if (horaAtual >= 6 && horaAtual < 14) fill(255, 165, 80);
@@ -27,7 +33,6 @@ class Relogio {
 
     noStroke();
     circle(0, 0, this.raio * 2);
-
     pop();
   }
 
@@ -37,20 +42,7 @@ class Relogio {
     fill(255);
     noStroke();
 
-    for (let i = 0; i < 12; i++) {
-      const angulo = radians(i * 30);
-      const x = cos(angulo) * (this.raio - 20);
-      const y = sin(angulo) * (this.raio - 20);
-      circle(x, y, 10);
-    }
-
-    for (let i = 0; i < 60; i++) {
-      const angulo = radians(i * 6);
-      const x = cos(angulo) * (this.raio - 20);
-      const y = sin(angulo) * (this.raio - 20);
-      fill(255, 150);
-      circle(x, y, 5);
-    }
+    this.formatarMarcadores();
 
     pop();
   }
@@ -139,5 +131,41 @@ class Relogio {
     horas = horas % 12;
     horas = horas ? horas : 12;
     return `${nf(horas, 2)}:${nf(minutos, 2)}:${nf(segundos, 2)} ${periodo}`;
+  }
+
+  formatarMarcadores() {
+    let cosX, sinY;
+    function cosXSinY(angulo, raio, fator = 20) {
+      cosX = cos(angulo) * (raio - fator);
+      sinY = sin(angulo) * (raio - fator);
+    }
+
+    if (this.marcador) {
+      for (let i = 0; i < 12; i++) {
+        const angulo = radians(i * 30);
+        cosXSinY(angulo, this.raio);
+        circle(cosX, sinY, 10);
+      }
+    } else {
+      for (let i = 0; i < 12; i++) {
+        const angulo = radians(i * 30 - 60);
+        cosXSinY(angulo, this.raio);
+        push();
+        fill(255);
+        noStroke();
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        // Desenha o número da hora
+        text(i + 1, cosX, sinY);
+        pop();
+      }
+    }
+
+    for (let i = 0; i < 60; i++) {
+      const angulo = radians(i * 6);
+      cosXSinY(angulo, this.raio);
+      fill(255, 150);
+      circle(cosX, sinY, 5);
+    }
   }
 }

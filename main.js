@@ -8,4 +8,5 @@ function draw() {
 
 function mousePressed() {
   botaoFormatarHora.clicar(mouseX, mouseY);
+  botaoFormatarMarcadores.clicar(mouseX, mouseY);
 }

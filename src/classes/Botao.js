@@ -1,5 +1,5 @@
 class Botao {
-  constructor(label, posicaoX, posicaoY, callback, largura = 200, altura = 50) {
+  constructor(label, posicaoX, posicaoY, callback, largura = 220, altura = 50) {
     this.label = label;
     this.altura = altura;
     this.largura = largura;

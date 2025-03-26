@@ -1,5 +1,5 @@
 let relogio;
-let botaoFormatarHora;
+let botaoFormatarHora, botaoFormatarMarcadores;
 
 function mainSetup() {
   createCanvas(WIDTH, HEIGHT);
@@ -12,6 +12,15 @@ function mainSetup() {
     HEIGHT - 50,
     () => {
       relogio.mudarFormato24();
+    }
+  );
+
+  botaoFormatarMarcadores = new Botao(
+    "Formatar Marcadores",
+    MEIO_WIDTH,
+    HEIGHT - 110,
+    () => {
+      relogio.mudarMarcadores();
     }
   );
 }
