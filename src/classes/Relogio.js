@@ -3,7 +3,7 @@ class Relogio {
     this.posicao = createVector(posicaoX, posicaoY);
     this.raio = raio;
     this.formato24 = false;
-    this.marcador = false;
+    this.marcador = true;
   }
 
   mudarFormato24() {
@@ -14,22 +14,49 @@ class Relogio {
     this.marcador = !this.marcador;
   }
 
+  definirCorDeFundo() {
+    // DESENHA A COR DO RELÓGIO COM BASE NO HORÁRIO ATUAL
+    const horaAtual = new Date().getHours();
+    if (horaAtual >= 18 || horaAtual < 6) fill(20, 20, 50);
+    else if (horaAtual >= 6 && horaAtual < 14) fill(255, 165, 80);
+    else fill(100, 100, 150);
+  }
+
   desenhar() {
+    this.desenharTitulo();
     this.desenharFundo();
     this.desenharMarcadores();
+    this.desenharDataDigital();
     this.desenharHorarioDigital();
     this.desenharPonteiros();
+  }
+
+  desenharTitulo() {
+    push();
+    textAlign(CENTER, CENTER);
+    textSize(35);
+    // fill(255, 234, 123);
+
+    const agora = new Date();
+    const segundos = agora.getSeconds();
+    // Gerando uma cor em função dos segundos (pode ser ajustado para outro critério)
+    const cor = color(
+      map(segundos, 0, 59, 0, 255), // Vermelho varia entre 0 e 255
+      map(segundos, 0, 59, 255, 0), // Verde varia entre 255 e 0
+      map(segundos, 0, 59, 0, 255) // Azul varia entre 0 e 255
+    );
+
+    fill(cor); // A cor do título muda com o tempo
+    noStroke();
+    text("Relógio Temporal", this.posicao.x, this.posicao.y - this.raio - 100);
+    pop();
   }
 
   desenharFundo() {
     push();
     translate(this.posicao.x, this.posicao.y);
 
-    // DESENHA A COR DO RELÓGIO COM BASE NO HORÁRIO ATUAL
-    const horaAtual = new Date().getHours();
-    if (horaAtual >= 18 || horaAtual < 6) fill(20, 20, 50);
-    else if (horaAtual >= 6 && horaAtual < 14) fill(255, 165, 80);
-    else fill(100, 100, 150);
+    this.definirCorDeFundo();
 
     noStroke();
     circle(0, 0, this.raio * 2);
@@ -83,49 +110,83 @@ class Relogio {
   }
 
   desenharHorarioDigital() {
+    const posicaoX = MEIO_WIDTH;
+    const posicaoY = MEIO_HEIGHT + 120;
     const agora = new Date();
 
     const segundos = nf(agora.getSeconds(), 2);
     const minutos = nf(agora.getMinutes(), 2);
     const horas = nf(agora.getHours(), 2);
-
     const horario = this.formatarHora(horas, minutos, segundos);
 
-    const dia = nf(agora.getDate(), 2);
-    const mes = nf(agora.getMonth() + 1, 2);
-    const ano = agora.getFullYear();
-    const data = `${dia}/${mes}/${ano}`;
-
     push();
-    translate(this.posicao.x, this.posicao.y + this.raio * 0.5);
-
     // MOLDURA
-    noFill();
     stroke(255);
     strokeWeight(2);
+    textAlign(CENTER, CENTER);
     rectMode(CENTER);
-    rect(10, 0, LARGURA_MOLDURA, ALTURA_MOLDURA, 100);
+    fill(100, 110, 70, 200);
+    rect(posicaoX, posicaoY, LARGURA_MOLDURA, ALTURA_MOLDURA, 100);
 
     // HORA
-    textAlign(LEFT, CENTER);
+    textAlign(CENTER, CENTER);
     textSize(24);
     fill(255);
     noStroke();
-    text(horario, 20, 0);
 
-    // DATA
-    textAlign(RIGHT, CENTER);
-    textSize(24);
-    fill(255);
-    noStroke();
-    text(data, -5, 0);
+    text(horario, posicaoX, posicaoY);
 
     pop();
   }
 
+  desenharDataDigital() {
+    const posicaoX = MEIO_WIDTH;
+    const posicaoY = MEIO_HEIGHT + 70;
+    const agora = new Date();
+
+    const diasDaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+    const mesesDoAno = [
+      "Jan",
+      "Fev",
+      "Mar",
+      "Abr",
+      "Mai",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Set",
+      "Out",
+      "Nov",
+      "Dez",
+    ];
+
+    const diaSemana = diasDaSemana[agora.getDay()];
+    const dia = nf(agora.getDate(), 2);
+    const mes = mesesDoAno[agora.getMonth()];
+    const ano = agora.getFullYear();
+    const data = `${diaSemana}, ${dia}/${mes}/${ano}`;
+
+    //
+    // DESENHAR
+    //
+    //  MOLDURA
+    stroke(255);
+    strokeWeight(2);
+    rectMode(CENTER);
+    fill(100, 110, 70, 200);
+    rect(posicaoX, posicaoY, LARGURA_MOLDURA, ALTURA_MOLDURA, 100);
+
+    // DATA
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    fill(255);
+    noStroke();
+    text(data, posicaoX, posicaoY);
+  }
+
   formatarHora(horas, minutos, segundos) {
     if (this.formato24)
-      return `${nf(horas, 2)}:${nf(minutos, 2)}:${nf(segundos, 2)}`;
+      return `${nf(horas, 2)}:${nf(minutos, 2)}:${nf(segundos, 2)} 24H`;
 
     const periodo = horas >= 12 ? "PM" : "AM";
     horas = horas % 12;

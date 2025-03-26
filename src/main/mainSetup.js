@@ -1,5 +1,6 @@
 let relogio;
-let botaoFormatarHora, botaoFormatarMarcadores;
+let botaoFormatarHora;
+let botaoFormatarMarcadores;
 
 function mainSetup() {
   createCanvas(WIDTH, HEIGHT);
